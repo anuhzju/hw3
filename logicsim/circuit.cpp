@@ -18,6 +18,10 @@ Circuit::Circuit() : m_current_time(0)
 
 Circuit::~Circuit()
 {
+  while(!m_pq.empty()){
+    delete m_pq.top();
+    m_pq.pop();
+  }
     for(auto i : m_wires)
     {
         delete i;
@@ -99,7 +103,7 @@ bool Circuit::parse(const char* fname)
                     getline(ss, s_output, ',');
                     m_gates.push_back(new And2Gate(m_wires[stoi(s_in1)], m_wires[stoi(s_in2)], m_wires[stoi(s_output)]));
                 }
-                if(s_type == "OR2")
+                else if(s_type == "OR2")
                 {
                     std::string s_in1;
                     getline(ss, s_in1, ',');
@@ -110,6 +114,13 @@ bool Circuit::parse(const char* fname)
                     m_gates.push_back(new Or2Gate(m_wires[stoi(s_in1)], m_wires[stoi(s_in2)], m_wires[stoi(s_output)]));
                 }
                 //Add code here to support the NOT gate type
+                else if(s_type == "NOT"){
+                  std::string s_in;
+                  getline(ss, s_in, ',');
+                  std::string s_out;
+                  getline(ss, s_out, ',');
+                  m_gates.push_back(new NotGate(m_wires[stoi(s_in)], m_wires[stoi(s_out)]));
+                }
             }
         }
         if(line == "INJECT")
@@ -144,6 +155,7 @@ bool Circuit::advance(std::ostream& os)
 	}
     
     m_current_time = m_pq.top()->time;
+
     std::stringstream ss;
     ss << "@" << m_current_time << std::endl;
     bool updated = false;

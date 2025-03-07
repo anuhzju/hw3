@@ -11,18 +11,18 @@ void llpivot(Node *&head, Node *&smaller, Node *&larger, int pivot)
         larger = nullptr;
         return;
     }
-    else {
 
-        Node* headNext = head -> next;
-        if (head -> value > pivot){
-            larger -> next = larger;
-            larger = head;
-        }
-        else{
-            head -> next = smaller;
-            smaller = head;
-        }
+    //save for next node
+    Node* headNext = head -> next;
+
+    if (head -> val > pivot){
+        larger = head;
+        llpivot(headNext, smaller, larger->next, pivot);
+    }
+    else {
+        smaller = head;
+        llpivot(headNext, smaller->next, larger, pivot);
     }
 
-    llpivot(headNext, smaller, larger, pivot);
+    head = nullptr;
 }
